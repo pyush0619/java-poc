@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProjectHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">javapoc</a> &gt; <a href="index.source.html" class="el_package">com.example.javapoc.handler</a> &gt; <span class="el_source">ProjectHandler.java</span></div><h1>ProjectHandler.java</h1><pre class="source lang-java linenums">package com.example.javapoc.handler;
+
+import com.example.javapoc.entities.Project;
+import com.example.javapoc.service.ProjectService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import static org.springframework.http.HttpStatus.OK;
+
+@Component
+<span class="fc" id="L16">public class ProjectHandler {</span>
+
+    @Autowired
+    ProjectService projectService;
+
+    /**
+     * handler function for getting all comments icons for an element
+     *
+     * @param serverRequest
+     * @return
+     */
+    public Mono&lt;ServerResponse&gt; getAllProjects(ServerRequest serverRequest) {
+<span class="fc" id="L28">        Flux&lt;Project&gt; AllProject =projectService.getAllProjects();</span>
+<span class="fc" id="L29">        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(AllProject, Project.class);</span>
+    }
+
+    public Mono&lt;ServerResponse&gt; getProjectById(ServerRequest serverRequest) {
+<span class="fc" id="L33">        String id= serverRequest.pathVariable(&quot;projectId&quot;);</span>
+<span class="fc" id="L34">        Mono&lt;Project&gt; projectsMono=projectService.getProjectById(id);</span>
+<span class="fc" id="L35">        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(projectsMono, Project.class);</span>
+    }
+    public Mono&lt;ServerResponse&gt; addProject(ServerRequest serverRequest){
+<span class="fc" id="L38">        Mono&lt;Project&gt; newProject=serverRequest.bodyToMono(Project.class);</span>
+<span class="fc" id="L39">        return newProject.flatMap(p -&gt;</span>
+<span class="fc" id="L40">                ServerResponse.status(OK).contentType(MediaType.APPLICATION_JSON)</span>
+<span class="fc" id="L41">                        .body(projectService.addProject(p), Project.class));</span>
+    }
+
+    public Mono&lt;ServerResponse&gt; deleteProject(ServerRequest serverRequest){
+<span class="fc" id="L45">        String id= serverRequest.pathVariable(&quot;projectId&quot;);</span>
+<span class="fc" id="L46">        Mono&lt;Void&gt; projectsMono=projectService.deleteProject(id);</span>
+<span class="fc" id="L47">        return ServerResponse.ok()</span>
+<span class="fc" id="L48">                .contentType(MediaType.APPLICATION_JSON)</span>
+<span class="fc" id="L49">                .body(projectsMono, Project.class);</span>
+    }
+
+    public Mono&lt;ServerResponse&gt; updateProject(ServerRequest serverRequest) {
+<span class="fc" id="L53">        String id = serverRequest.pathVariable(&quot;projectId&quot;);</span>
+<span class="fc" id="L54">        Mono&lt;Project&gt; projectsMono = serverRequest.bodyToMono(Project.class);</span>
+<span class="fc" id="L55">        return projectsMono.flatMap(p -&gt;</span>
+<span class="fc" id="L56">                ServerResponse.status(OK)</span>
+<span class="fc" id="L57">                        .contentType(MediaType.APPLICATION_JSON)</span>
+<span class="fc" id="L58">                        .body(projectService.updateProject(id,p), Project.class));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,167 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > AuthHandler</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.javapoc.handler</a>
+</div>
+
+<h1>Coverage Summary for Class: AuthHandler (com.example.javapoc.handler)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AuthHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    14.3%
+  </span>
+  <span class="absValue">
+    (1/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    22.2%
+  </span>
+  <span class="absValue">
+    (4/18)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.javapoc.handler;
+&nbsp;
+&nbsp;import com.example.javapoc.entities.User;
+&nbsp;import com.example.javapoc.dto.ApiResponse;
+&nbsp;import com.example.javapoc.dto.LoginRequest;
+&nbsp;import com.example.javapoc.dto.LoginResponse;
+&nbsp;import com.example.javapoc.repositories.UserRepository;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;import org.springframework.web.bind.annotation.RequestBody;
+&nbsp;import org.springframework.web.reactive.function.BodyInserters;
+&nbsp;import org.springframework.web.reactive.function.server.ServerRequest;
+&nbsp;import org.springframework.web.reactive.function.server.ServerResponse;
+&nbsp;import reactor.core.publisher.Mono;
+&nbsp;
+&nbsp;import static org.springframework.http.MediaType.APPLICATION_JSON;
+&nbsp;
+&nbsp;@Component
+&nbsp;public class AuthHandler {
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private BCryptPasswordEncoder passwordEncoder;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private TokenProvider tokenProvider;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserRepository userRepository;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * handler function for getting all comments icons for an element
+&nbsp;     *
+&nbsp;     * @param passwordEncoder
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;
+<b class="fc">&nbsp;    public AuthHandler(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder){</b>
+<b class="fc">&nbsp;        this.userRepository = userRepository;</b>
+<b class="fc">&nbsp;        this.passwordEncoder = passwordEncoder;</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    public Mono&lt;ServerResponse&gt; login(@RequestBody ServerRequest request) {
+<b class="nc">&nbsp;        Mono&lt;LoginRequest&gt; loginRequest = request.bodyToMono(LoginRequest.class);</b>
+<b class="nc">&nbsp;        return loginRequest.flatMap(login -&gt; userRepository.findByUsername(login.getUsername())</b>
+<b class="nc">&nbsp;            .flatMap(user -&gt; {</b>
+<b class="nc">&nbsp;                if (passwordEncoder.matches(login.getPassword(), user.getPassword())) {</b>
+<b class="nc">&nbsp;                    return ServerResponse.ok().contentType(APPLICATION_JSON).body(BodyInserters.fromObject(new LoginResponse(tokenProvider.generateToken(user))));</b>
+&nbsp;                } else {
+<b class="nc">&nbsp;                    return ServerResponse.badRequest().body(BodyInserters.fromObject(new ApiResponse(400, &quot;Invalid credentials&quot;, null)));</b>
+&nbsp;                }
+<b class="nc">&nbsp;            }).switchIfEmpty(ServerResponse.badRequest().body(BodyInserters.fromObject(new ApiResponse(400, &quot;User does not exist&quot;, null)))));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Mono&lt;ServerResponse&gt; signUp(@RequestBody ServerRequest request) {
+<b class="nc">&nbsp;        Mono&lt;User&gt; userMono = request.bodyToMono(User.class);</b>
+<b class="nc">&nbsp;        return userMono.map(user -&gt; {</b>
+<b class="nc">&nbsp;            user.setPassword(passwordEncoder.encode(user.getPassword()));</b>
+<b class="nc">&nbsp;            return user;</b>
+<b class="nc">&nbsp;        }).flatMap(user -&gt; userRepository.findByUsername(user.getUsername())</b>
+<b class="nc">&nbsp;                .flatMap(dbUser -&gt; ServerResponse.badRequest().body(BodyInserters.fromObject(new ApiResponse(400, &quot;User already exist&quot;, null))))</b>
+<b class="nc">&nbsp;                .switchIfEmpty(userRepository.save(user).flatMap(savedUser -&gt; ServerResponse.ok().contentType(APPLICATION_JSON).body(BodyInserters.fromObject(savedUser)))));</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-06 15:56</div>
+</div>
+</body>
+</html>

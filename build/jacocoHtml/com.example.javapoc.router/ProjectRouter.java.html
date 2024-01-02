@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProjectRouter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">javapoc</a> &gt; <a href="index.source.html" class="el_package">com.example.javapoc.router</a> &gt; <span class="el_source">ProjectRouter.java</span></div><h1>ProjectRouter.java</h1><pre class="source lang-java linenums">package com.example.javapoc.router;
+
+import com.example.javapoc.handler.ProjectHandler;
+import com.example.javapoc.service.ProjectService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.web.reactive.config.EnableWebFlux;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.ServerResponse;
+
+import static org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route;
+import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
+
+@Configuration
+@EnableWebFlux
+<span class="fc" id="L19">public class ProjectRouter implements WebFluxConfigurer {</span>
+    @Autowired
+    private ProjectHandler projectHandler;
+
+    @Bean
+    public RouterFunction&lt;ServerResponse&gt; routerProject() {
+<span class="fc" id="L25">        return route()</span>
+<span class="fc" id="L26">                .GET(&quot;/projects&quot;,</span>
+<span class="fc" id="L27">                        accept(MediaType.APPLICATION_JSON),</span>
+<span class="fc" id="L28">                        projectHandler::getAllProjects,</span>
+<span class="fc" id="L29">                        ops -&gt; ops.beanClass(ProjectService.class).beanMethod(&quot;getAllProjects&quot;))</span>
+<span class="fc" id="L30">                .build()</span>
+<span class="fc" id="L31">                .and(route()</span>
+<span class="fc" id="L32">                        .GET(&quot;/projects/{projectId}&quot;,</span>
+<span class="fc" id="L33">                                accept(MediaType.APPLICATION_JSON),</span>
+<span class="fc" id="L34">                                projectHandler::getProjectById,</span>
+<span class="fc" id="L35">                                ops -&gt; ops.beanClass(ProjectService.class).beanMethod(&quot;getProjectById&quot;))</span>
+<span class="fc" id="L36">                        .build()</span>
+<span class="fc" id="L37">                        .and(route()</span>
+<span class="fc" id="L38">                                .POST(&quot;/projects&quot;,</span>
+<span class="fc" id="L39">                                        accept(MediaType.APPLICATION_JSON),</span>
+<span class="fc" id="L40">                                        projectHandler::addProject,</span>
+<span class="fc" id="L41">                                        ops -&gt; ops.beanClass(ProjectService.class).beanMethod(&quot;addProject&quot;))</span>
+<span class="fc" id="L42">                                .build()</span>
+<span class="fc" id="L43">                                .and(route()</span>
+<span class="fc" id="L44">                                        .DELETE(&quot;/projects/{projectId}&quot;,</span>
+<span class="fc" id="L45">                                                accept(MediaType.APPLICATION_JSON),</span>
+<span class="fc" id="L46">                                                projectHandler::deleteProject,</span>
+<span class="fc" id="L47">                                                ops -&gt; ops.beanClass(ProjectService.class).beanMethod(&quot;deleteProject&quot;))</span>
+<span class="fc" id="L48">                                        .build()</span>
+<span class="fc" id="L49">                                        .and(route()</span>
+<span class="fc" id="L50">                                                .PUT(&quot;/projects/{projectId}&quot;,</span>
+<span class="fc" id="L51">                                                        accept(MediaType.APPLICATION_JSON),</span>
+<span class="fc" id="L52">                                                        projectHandler::updateProject,</span>
+<span class="fc" id="L53">                                                        ops -&gt; ops.beanClass(ProjectService.class).beanMethod(&quot;updateProject&quot;))</span>
+<span class="fc" id="L54">                                                .build()</span>
+                                        )
+                                )
+                        )
+                );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

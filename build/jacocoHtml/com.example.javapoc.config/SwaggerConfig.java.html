@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SwaggerConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">javapoc</a> &gt; <a href="index.source.html" class="el_package">com.example.javapoc.config</a> &gt; <span class="el_source">SwaggerConfig.java</span></div><h1>SwaggerConfig.java</h1><pre class="source lang-java linenums">package com.example.javapoc.config;
+
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.springdoc.core.GroupedOpenApi;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+<span class="fc" id="L12">public class SwaggerConfig {</span>
+
+    @Bean
+    public OpenAPI customizeOpenAPI() {
+<span class="fc" id="L16">        final String securitySchemeName = &quot;bearerAuth&quot;;</span>
+<span class="fc" id="L17">        return new OpenAPI()</span>
+<span class="fc" id="L18">                .addSecurityItem(new SecurityRequirement()</span>
+<span class="fc" id="L19">                        .addList(securitySchemeName))</span>
+<span class="fc" id="L20">                .components(new Components()</span>
+<span class="fc" id="L21">                        .addSecuritySchemes(securitySchemeName, new SecurityScheme()</span>
+<span class="fc" id="L22">                                .name(securitySchemeName)</span>
+<span class="fc" id="L23">                                .type(SecurityScheme.Type.HTTP)</span>
+<span class="fc" id="L24">                                .scheme(&quot;Bearer&quot;)</span>
+<span class="fc" id="L25">                                .bearerFormat(&quot;JWT&quot;)));</span>
+    }
+
+    @Bean
+    public GroupedOpenApi elementApi(){
+<span class="fc" id="L30">        String[] paths = new String[]{&quot;/projects/*/slates/*/elements/**&quot;};</span>
+<span class="fc" id="L31">        return GroupedOpenApi.builder().group(&quot;elements&quot;).pathsToMatch(paths).build();</span>
+    }
+
+    @Bean
+    public GroupedOpenApi CommentApi() {
+<span class="fc" id="L36">        String[] paths = new String[]{&quot;/elements/**&quot;};</span>
+<span class="fc" id="L37">        return GroupedOpenApi.builder().group(&quot;comments&quot;).pathsToMatch(paths).build();</span>
+    }
+        @Bean
+        public GroupedOpenApi ProjectApi () {
+<span class="fc" id="L41">            String[] paths = new String[]{&quot;/projects/**&quot;};</span>
+<span class="fc" id="L42">            return GroupedOpenApi.builder().group(&quot;project&quot;).pathsToMatch(paths).build();</span>
+        }
+
+    @Bean
+    public GroupedOpenApi SlateApi(){
+<span class="fc" id="L47">        String[] paths=new String[]{&quot;/projects/*/slates/**&quot;};</span>
+<span class="fc" id="L48">        return GroupedOpenApi.builder().group(&quot;Slate&quot;).pathsToMatch(paths).build();</span>
+    }
+
+    @Bean
+    public GroupedOpenApi AuthenticationApi() {
+<span class="fc" id="L53">        String[] paths = {&quot;/auth/**&quot;,&quot;/users/**&quot;};</span>
+<span class="fc" id="L54">        return GroupedOpenApi.builder().group(&quot;Authentication-Api&quot;).pathsToMatch(paths).build();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

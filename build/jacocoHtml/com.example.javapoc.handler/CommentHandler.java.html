@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CommentHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">javapoc</a> &gt; <a href="index.source.html" class="el_package">com.example.javapoc.handler</a> &gt; <span class="el_source">CommentHandler.java</span></div><h1>CommentHandler.java</h1><pre class="source lang-java linenums">package com.example.javapoc.handler;
+
+import com.example.javapoc.entities.Comment;
+import com.example.javapoc.entities.Reply;
+import com.example.javapoc.dto.CommentRequest;
+import com.example.javapoc.dto.ReplyRequest;
+import com.example.javapoc.service.CommentService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+@Component
+<span class="fc" id="L19">@Slf4j</span>
+<span class="fc" id="L20">public class CommentHandler {</span>
+    @Autowired
+    CommentService commentService;
+
+    /**
+     * handler function for getting all comments icons for an element
+     *
+     * @param serverRequest
+     * @return
+     */
+    public Mono&lt;ServerResponse&gt; getCommentsById(ServerRequest serverRequest){
+<span class="nc" id="L31">        String Id = serverRequest.pathVariable(&quot;elementId&quot;);</span>
+<span class="nc" id="L32">        Flux&lt;Comment&gt; commentsById = commentService.getCommentsByID(Id);</span>
+<span class="nc" id="L33">        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(commentsById, Comment.class);</span>
+    }
+    /**
+     * handler function for adding a comment
+     *
+     * @param serverRequest
+     * @return
+     */
+    public Mono&lt;ServerResponse&gt; addComment(ServerRequest serverRequest){
+<span class="nc" id="L42">        Mono&lt;CommentRequest&gt; commentToAdd = serverRequest.bodyToMono(CommentRequest.class);</span>
+<span class="nc" id="L43">        return commentToAdd.flatMap(result -&gt;</span>
+<span class="nc" id="L44">                ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(commentService.addComment(result),Comment.class));</span>
+    }
+    /**
+     * handler function for deleting a comment
+     *
+     * @param serverRequest
+     * @return
+     */
+    public Mono&lt;ServerResponse&gt; deleteComment(ServerRequest serverRequest){
+<span class="nc" id="L53">        String commentId = serverRequest.pathVariable(&quot;commentId&quot;);</span>
+<span class="nc" id="L54">        String elementId = serverRequest.pathVariable(&quot;elementId&quot;);</span>
+<span class="nc" id="L55">        Mono&lt;Void&gt; commentDeleted = commentService.deleteComment(elementId,commentId);</span>
+<span class="nc" id="L56">        return ServerResponse.ok().body(commentDeleted,Comment.class);</span>
+    }
+    /**
+     * handler function for updating a comment
+     *
+     * @param serverRequest
+     * @return
+     */
+    public Mono&lt;ServerResponse&gt; updateComment(ServerRequest serverRequest){
+<span class="nc" id="L65">        String commentId =serverRequest.pathVariable(&quot;commentId&quot;);</span>
+<span class="nc" id="L66">        String elementId = serverRequest.pathVariable(&quot;elementId&quot;);</span>
+<span class="nc" id="L67">        Mono&lt;CommentRequest&gt; commentMono=serverRequest.bodyToMono(CommentRequest.class);</span>
+<span class="nc" id="L68">        log.info(&quot;update comments handler&quot;);</span>
+<span class="nc" id="L69">        return commentMono.flatMap(s-&gt;</span>
+<span class="nc" id="L70">                ServerResponse.status(HttpStatus.OK)</span>
+<span class="nc" id="L71">                        .contentType(MediaType.APPLICATION_JSON)</span>
+<span class="nc" id="L72">                        .body(commentService.updateComment(elementId,commentId,s),Comment.class));</span>
+    }
+    /**
+     * handler function for getting all replies for a comment
+     *
+     * @param serverRequest
+     * @return
+     */
+    public Mono&lt;ServerResponse&gt; getRepliesById(ServerRequest serverRequest){
+<span class="nc" id="L81">        String Id = serverRequest.pathVariable(&quot;commentId&quot;);</span>
+<span class="nc" id="L82">        Flux&lt;Reply&gt; repliesById = commentService.getRepliesById(Id);</span>
+<span class="nc" id="L83">        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(repliesById, Reply.class);</span>
+    }
+    /**
+     * handler function for adding a reply
+     *
+     * @param serverRequest
+     * @return
+     */
+    public Mono&lt;ServerResponse&gt; addReply(ServerRequest serverRequest){
+<span class="nc" id="L92">        Mono&lt;ReplyRequest&gt; replyToAdd = serverRequest.bodyToMono(ReplyRequest.class);</span>
+<span class="nc" id="L93">        return replyToAdd.flatMap(result -&gt;</span>
+<span class="nc" id="L94">                ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(commentService.addReply(result),Reply.class));</span>
+    }
+    /**
+     * handler function for deleting a reply
+     *
+     * @param serverRequest
+     * @return
+     */
+    public Mono&lt;ServerResponse&gt; deleteReply(ServerRequest serverRequest){
+<span class="nc" id="L103">        String replyId = serverRequest.pathVariable(&quot;replyId&quot;);</span>
+<span class="nc" id="L104">        String commentId=serverRequest.pathVariable(&quot;commentId&quot;);</span>
+<span class="nc" id="L105">        Mono&lt;Void&gt; replyDeleted = commentService.deleteReply(commentId,replyId);</span>
+<span class="nc" id="L106">        return ServerResponse.ok().body(replyDeleted,Reply.class);</span>
+    }
+    /**
+     * handler function for updating a reply
+     *
+     * @param serverRequest
+     * @return
+     */
+    public Mono&lt;ServerResponse&gt; updateReply(ServerRequest serverRequest){
+<span class="nc" id="L115">        String replyId =serverRequest.pathVariable(&quot;replyId&quot;);</span>
+<span class="nc" id="L116">        String commentId=serverRequest.pathVariable(&quot;commentId&quot;);</span>
+
+<span class="nc" id="L118">        Mono&lt;ReplyRequest&gt; replyMono=serverRequest.bodyToMono(ReplyRequest.class);</span>
+<span class="nc" id="L119">        return replyMono.flatMap(s-&gt;</span>
+<span class="nc" id="L120">                ServerResponse.status(HttpStatus.OK)</span>
+<span class="nc" id="L121">                        .contentType(MediaType.APPLICATION_JSON)</span>
+<span class="nc" id="L122">                        .body(commentService.updateReply(commentId,replyId,s),Reply.class));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

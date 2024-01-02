@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ElementHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">javapoc</a> &gt; <a href="index.source.html" class="el_package">com.example.javapoc.handler</a> &gt; <span class="el_source">ElementHandler.java</span></div><h1>ElementHandler.java</h1><pre class="source lang-java linenums">package com.example.javapoc.handler;
+import com.example.javapoc.entities.Elements;
+import com.example.javapoc.service.ElementService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import static javax.security.auth.callback.ConfirmationCallback.OK;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+
+@Component
+<span class="fc" id="L14">public class ElementHandler {</span>
+
+    @Autowired
+    ElementService elementService;
+    /**
+     * handler function for getting all comments icons for an element
+     *
+     * @param serverRequest
+     * @return
+     */
+
+    public Mono&lt;ServerResponse&gt; getAllElements(ServerRequest serverRequest) {
+<span class="nc" id="L26">        String distributableUrn = serverRequest.pathVariable(&quot;projectId&quot;);</span>
+<span class="nc" id="L27">        String slateManifestUrn=serverRequest.pathVariable(&quot;slateId&quot;);</span>
+<span class="nc" id="L28">        Flux&lt;Elements&gt; AllElements =elementService.getAllElements(distributableUrn,slateManifestUrn);</span>
+<span class="nc" id="L29">        return ServerResponse.ok().body(AllElements,Elements.class);</span>
+    }
+
+    public Mono&lt;ServerResponse&gt; getElementBySlateManifestUrnAndWorkUrn(ServerRequest serverRequest) {
+<span class="nc" id="L33">        String distributableUrn = serverRequest.pathVariable(&quot;projectId&quot;);</span>
+<span class="nc" id="L34">        String slateManifestUrn = serverRequest.pathVariable(&quot;slateId&quot;);</span>
+<span class="nc" id="L35">        String workUrn=serverRequest.pathVariable(&quot;elementId&quot;);</span>
+<span class="nc" id="L36">        Mono&lt;Elements&gt; elementsMono=elementService.getElementBySlateManifestUrnAndWorkUrn(distributableUrn,slateManifestUrn, workUrn);</span>
+<span class="nc" id="L37">        return ServerResponse.ok().body(elementsMono,Elements.class);</span>
+    }
+
+    public Mono&lt;ServerResponse&gt; addElement(ServerRequest serverRequest){
+<span class="nc" id="L41">        Mono&lt;Elements&gt; newElement=serverRequest.bodyToMono(Elements.class);</span>
+<span class="nc" id="L42">        return newElement.flatMap(s -&gt;</span>
+<span class="nc" id="L43">                ServerResponse.status(OK)</span>
+<span class="nc" id="L44">                        .body(elementService.addElement(s), Elements.class));</span>
+    }
+
+    public Mono&lt;ServerResponse&gt; deleteElement(ServerRequest serverRequest){
+<span class="nc" id="L48">        String distributableUrn = serverRequest.pathVariable(&quot;projectId&quot;);</span>
+<span class="nc" id="L49">        String slateManifestUrn = serverRequest.pathVariable(&quot;slateId&quot;);</span>
+<span class="nc" id="L50">        String workUrn=serverRequest.pathVariable(&quot;elementId&quot;);</span>
+<span class="nc" id="L51">        Mono&lt;Void&gt; elementsMono=elementService.deleteElement(distributableUrn,slateManifestUrn, workUrn);</span>
+<span class="nc" id="L52">        return ServerResponse.ok().body(elementsMono,Elements.class);</span>
+    }
+
+    public Mono&lt;ServerResponse&gt; updateElement(ServerRequest serverRequest) {
+<span class="nc" id="L56">        String distributableUrn = serverRequest.pathVariable(&quot;projectId&quot;);</span>
+<span class="nc" id="L57">        String slateManifestUrn = serverRequest.pathVariable(&quot;slateId&quot;);</span>
+<span class="nc" id="L58">        String workUrn=serverRequest.pathVariable(&quot;elementId&quot;);</span>
+<span class="nc" id="L59">        Mono&lt;Elements&gt; elementsMono = serverRequest.bodyToMono(Elements.class);</span>
+<span class="nc" id="L60">        return elementsMono.flatMap(s -&gt;</span>
+<span class="nc" id="L61">                ServerResponse.status(OK)</span>
+<span class="nc" id="L62">                        .contentType(APPLICATION_JSON)</span>
+<span class="nc" id="L63">                        .body(elementService.updateElement(distributableUrn,slateManifestUrn, workUrn, s), Elements.class));</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

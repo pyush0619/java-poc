@@ -1,0 +1,163 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ProjectHandler</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.javapoc.handler</a>
+</div>
+
+<h1>Coverage Summary for Class: ProjectHandler (com.example.javapoc.handler)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProjectHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    12.5%
+  </span>
+  <span class="absValue">
+    (1/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    4.8%
+  </span>
+  <span class="absValue">
+    (1/21)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.javapoc.handler;
+&nbsp;
+&nbsp;import com.example.javapoc.entities.Project;
+&nbsp;import com.example.javapoc.service.ProjectService;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.MediaType;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;import org.springframework.web.reactive.function.server.ServerRequest;
+&nbsp;import org.springframework.web.reactive.function.server.ServerResponse;
+&nbsp;import reactor.core.publisher.Flux;
+&nbsp;import reactor.core.publisher.Mono;
+&nbsp;
+&nbsp;import static org.springframework.http.HttpStatus.OK;
+&nbsp;
+&nbsp;@Component
+<b class="fc">&nbsp;public class ProjectHandler {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    ProjectService projectService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * handler function for getting all comments icons for an element
+&nbsp;     *
+&nbsp;     * @param serverRequest
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    public Mono&lt;ServerResponse&gt; getAllProjects(ServerRequest serverRequest) {
+<b class="nc">&nbsp;        Flux&lt;Project&gt; AllProject =projectService.getAllProjects();</b>
+<b class="nc">&nbsp;        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(AllProject, Project.class);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Mono&lt;ServerResponse&gt; getProjectById(ServerRequest serverRequest) {
+<b class="nc">&nbsp;        String id= serverRequest.pathVariable(&quot;projectId&quot;);</b>
+<b class="nc">&nbsp;        Mono&lt;Project&gt; projectsMono=projectService.getProjectById(id);</b>
+<b class="nc">&nbsp;        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(projectsMono, Project.class);</b>
+&nbsp;    }
+&nbsp;    public Mono&lt;ServerResponse&gt; addProject(ServerRequest serverRequest){
+<b class="nc">&nbsp;        Mono&lt;Project&gt; newProject=serverRequest.bodyToMono(Project.class);</b>
+<b class="nc">&nbsp;        return newProject.flatMap(p -&gt;</b>
+<b class="nc">&nbsp;                ServerResponse.status(OK).contentType(MediaType.APPLICATION_JSON)</b>
+<b class="nc">&nbsp;                        .body(projectService.addProject(p), Project.class));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Mono&lt;ServerResponse&gt; deleteProject(ServerRequest serverRequest){
+<b class="nc">&nbsp;        String id= serverRequest.pathVariable(&quot;projectId&quot;);</b>
+<b class="nc">&nbsp;        Mono&lt;Void&gt; projectsMono=projectService.deleteProject(id);</b>
+<b class="nc">&nbsp;        return ServerResponse.ok()</b>
+<b class="nc">&nbsp;                .contentType(MediaType.APPLICATION_JSON)</b>
+<b class="nc">&nbsp;                .body(projectsMono, Project.class);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Mono&lt;ServerResponse&gt; updateProject(ServerRequest serverRequest) {
+<b class="nc">&nbsp;        String id = serverRequest.pathVariable(&quot;projectId&quot;);</b>
+<b class="nc">&nbsp;        Mono&lt;Project&gt; projectsMono = serverRequest.bodyToMono(Project.class);</b>
+<b class="nc">&nbsp;        return projectsMono.flatMap(p -&gt;</b>
+<b class="nc">&nbsp;                ServerResponse.status(OK)</b>
+<b class="nc">&nbsp;                        .contentType(MediaType.APPLICATION_JSON)</b>
+<b class="nc">&nbsp;                        .body(projectService.updateProject(id,p), Project.class));</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-06 15:56</div>
+</div>
+</body>
+</html>

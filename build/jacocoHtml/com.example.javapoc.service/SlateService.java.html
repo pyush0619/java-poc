@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SlateService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">javapoc</a> &gt; <a href="index.source.html" class="el_package">com.example.javapoc.service</a> &gt; <span class="el_source">SlateService.java</span></div><h1>SlateService.java</h1><pre class="source lang-java linenums">package com.example.javapoc.service;
+
+import com.example.javapoc.entities.Slate;
+import com.example.javapoc.exception.SlateNotFound;
+import com.example.javapoc.repositories.SlateRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import java.time.Instant;
+import java.util.UUID;
+
+@Service
+<span class="fc" id="L15">public class SlateService {</span>
+    @Autowired
+    SlateRepository slateRepository;
+
+
+    //get all slates of a particular project
+    /**
+     * Get all Slates for a particular project by distributableUrn(projectId)
+     *
+     * @param projectId
+     * @return
+     */
+    public Flux&lt;Slate&gt; getSlateByDistributableUrn(@PathVariable(&quot;projectId&quot;) String projectId) {
+
+<span class="nc" id="L29">        return slateRepository.findBydistributableUrn(projectId).switchIfEmpty(Mono.error(new SlateNotFound(&quot;Slate not found with this URN&quot;+projectId)));</span>
+    }
+
+    //get a particular slate by their Id
+    /**
+     * Get Slate for given manifestUrn(slateId) and distributableUrn(projectId)
+     *
+     * @param slateId
+     * @return
+     */
+    public Mono&lt;Slate&gt; getSlateByManifestUrnAndDistributableUrn(@PathVariable(&quot;slateId&quot;) String slateId,@PathVariable(&quot;projectId&quot;) String projectId){
+
+<span class="nc" id="L41">        return slateRepository.findByManifestUrnAndDistributableUrn(slateId,projectId).switchIfEmpty(Mono.error(new SlateNotFound(&quot;Slate not found with this URN&quot;+slateId)));</span>
+
+    }
+
+    //Adding a Slate
+    public Mono&lt;Slate&gt; addSlateByManifestUrnAndDistributableUrn(Slate slate){
+<span class="nc" id="L47">        String manifestUrnToadd= &quot;urn:manifest:&quot; + UUID.randomUUID();</span>
+<span class="nc" id="L48">        String entityUrnToadd= &quot;urn:entity:&quot;+UUID.randomUUID();</span>
+<span class="nc" id="L49">        slate.setCreatedTimestamp(Instant.now());</span>
+<span class="nc" id="L50">        slate.setManifestUrn(manifestUrnToadd);</span>
+<span class="nc" id="L51">        slate.setEntityUrn(entityUrnToadd);</span>
+<span class="nc" id="L52">        return slateRepository.save(slate);</span>
+    }
+
+
+    /**
+     * delete slate for given manifestUrn(slateId) and distributableUrn(projectId)
+     *
+     * @param slateId,projectId
+     * @return
+     */
+    public Mono&lt;Void&gt; deleteSlateByManifestUrnAndDistributableUrn(@PathVariable(&quot;slateId&quot;) String slateId,@PathVariable(&quot;projectId&quot;) String projectId){
+<span class="nc" id="L63">               return slateRepository.deleteByManifestUrnAndDistributableUrn(slateId,projectId);</span>
+
+    }
+
+    /**
+     * update slate for given slateId
+     *
+     * @param slateId,projectId
+     * @return
+     */
+    public Mono&lt;Slate&gt; updateSlateByManifestUrnAndDistributableUrn(@PathVariable(&quot;slateId&quot;) String slateId,@PathVariable(&quot;projectId&quot;) String projectId, Slate slate){
+
+
+<span class="nc" id="L76">        return slateRepository.findByManifestUrnAndDistributableUrn(slateId,projectId).flatMap(</span>
+                s-&gt; {
+<span class="nc" id="L78">                    s.setTitle(slate.getTitle());</span>
+<span class="nc" id="L79">                    s.setCreatedBy(slate.getCreatedBy());</span>
+<span class="nc" id="L80">                    s.setUpdatedBy(slate.getUpdatedBy());</span>
+<span class="nc" id="L81">                    s.setUpdatedTimestamp(Instant.now());</span>
+<span class="nc" id="L82">                    return slateRepository.save(s);</span>
+                });
+
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

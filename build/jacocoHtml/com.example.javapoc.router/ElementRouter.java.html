@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ElementRouter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">javapoc</a> &gt; <a href="index.source.html" class="el_package">com.example.javapoc.router</a> &gt; <span class="el_source">ElementRouter.java</span></div><h1>ElementRouter.java</h1><pre class="source lang-java linenums">package com.example.javapoc.router;
+import com.example.javapoc.handler.ElementHandler;
+import com.example.javapoc.service.ElementService;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.web.reactive.config.EnableWebFlux;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.ServerResponse;
+import static org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route;
+import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
+@Configuration
+@EnableWebFlux
+<span class="fc" id="L15">public class ElementRouter implements WebFluxConfigurer {</span>
+    @Bean
+    public RouterFunction&lt;ServerResponse&gt; routerElement(ElementHandler elementHandler) {
+<span class="fc" id="L18">        return route()</span>
+<span class="fc" id="L19">                .GET(&quot;/projects/{projectId}/slates/{slateId}/elements&quot;,</span>
+<span class="fc" id="L20">                        accept(MediaType.APPLICATION_JSON),</span>
+<span class="fc" id="L21">                        elementHandler::getAllElements,</span>
+<span class="fc" id="L22">                        ops -&gt; ops.beanClass(ElementService.class).beanMethod(&quot;getAllElements&quot;))</span>
+<span class="fc" id="L23">                .build()</span>
+<span class="fc" id="L24">                .and(route()</span>
+<span class="fc" id="L25">                        .GET(&quot;/projects/{projectId}/slates/{slateId}/elements/{elementId}&quot;,</span>
+<span class="fc" id="L26">                                accept(MediaType.APPLICATION_JSON),</span>
+<span class="fc" id="L27">                                elementHandler::getElementBySlateManifestUrnAndWorkUrn,</span>
+<span class="fc" id="L28">                                ops -&gt; ops.beanClass(ElementService.class).beanMethod(&quot;getElementBySlateManifestUrnAndWorkUrn&quot;))</span>
+<span class="fc" id="L29">                        .build()</span>
+<span class="fc" id="L30">                        .and(route()</span>
+<span class="fc" id="L31">                                .POST(&quot;/projects/{projectId}/slates/{slateId}/elements&quot;,</span>
+<span class="fc" id="L32">                                        accept(MediaType.APPLICATION_JSON),</span>
+<span class="fc" id="L33">                                        elementHandler::addElement,</span>
+<span class="fc" id="L34">                                        ops -&gt; ops.beanClass(ElementService.class).beanMethod(&quot;addElement&quot;))</span>
+<span class="fc" id="L35">                                .build()</span>
+<span class="fc" id="L36">                                .and(route()</span>
+<span class="fc" id="L37">                                        .DELETE(&quot;/projects/{projectId}/slates/{slateId}/elements/{elementId}&quot;,</span>
+<span class="fc" id="L38">                                                accept(MediaType.APPLICATION_JSON),</span>
+<span class="fc" id="L39">                                                elementHandler::deleteElement,</span>
+<span class="fc" id="L40">                                                ops -&gt; ops.beanClass(ElementService.class).beanMethod(&quot;deleteElement&quot;))</span>
+<span class="fc" id="L41">                                        .build()</span>
+<span class="fc" id="L42">                                        .and(route()</span>
+<span class="fc" id="L43">                                                .PUT(&quot;/projects/{projectId}/slates/{slateId}/elements/{elementId}&quot;,</span>
+<span class="fc" id="L44">                                                        accept(MediaType.APPLICATION_JSON),</span>
+<span class="fc" id="L45">                                                        elementHandler::updateElement,</span>
+<span class="fc" id="L46">                                                        ops -&gt; ops.beanClass(ElementService.class).beanMethod(&quot;updateElement&quot;))</span>
+<span class="fc" id="L47">                                                .build()</span>
+                                        )
+                                )
+                        )
+                );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
